@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/fannatic2000/nodejs_blog#readme",
   "lint-staged": {
-    "src/**/*.{js,json,scss}": "prettier --single-quote --trailing-comma all --tab-width 4 --write"
+    "src/**/*.{js,json,scss}": "prettier --single-quote --trailing-comma all --tab-width 4 --allow-empty --write"
   },
   "dependencies": {
     "express": "^4.17.1",
