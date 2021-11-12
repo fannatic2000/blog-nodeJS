@@ -12,18 +12,23 @@ const route = require('./routes');
 // Note: Load CSS cho HTML đường dẫn sẽ bắt đầu từ đây
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.urlencoded({
-  extended: true
-})); // midleware xử lý khi gửi từ Form code HTML lên (Client -> Server)
+app.use(
+    express.urlencoded({
+        extended: true,
+    }),
+); // midleware xử lý khi gửi từ Form code HTML lên (Client -> Server)
 app.use(express.json()); // midleware xử lý khi gửi từ code JS lên (Client -> Server)
 
 // HTTP logger
 //app.use(morgan('combined'));
 
 // Template engine
-app.engine('hbs', handlebars({
-  extname: '.hbs'
-}));
+app.engine(
+    'hbs',
+    handlebars({
+        extname: '.hbs',
+    }),
+);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'resources/views'));
 
@@ -32,5 +37,5 @@ route(app);
 
 // 127.0.0.1 - localhost
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`Example app listening at http://localhost:${port}`);
 });
