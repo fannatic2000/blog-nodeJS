@@ -1,0 +1,163 @@
+<form name="container-form" method="POST" action="/courses/handle-form-actions" class="mt-4">
+    <div class="header-list-courses">
+        <div>
+            <h3>Khóa học của tôi</h3>
+            <a href="/me/trash/courses" class="btn-trash">
+                <i class="fas fa-trash"></i>
+                Thùng rác ({{deletedCount}})
+            </a>
+
+            <div class="mt-4 d-flex align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                    <label class="form-check-label" for="checkbox-all">
+                        Chọn tất cả
+                    </label>
+                </div>
+
+                <select class="form-control form-control-sm select-options" name="action" required>
+                    <option value="">-- Chọn chức năng--</option>
+                    <option value="delete">Xóa</option>
+                </select>
+
+                <button class="btn btn-primary btn-sm check-all-submit-btn" disabled>Thực hiện</button>
+            </div>
+        </div>
+        <div class="mr-4">
+            <a href="/courses/create" class="btn btn-success"> + Tạo khóa học</a>
+        </div>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr> <!--Trường field (sortable) phải cùng tên với field trong db-->
+                <th scope="col"></th>
+                <th scope="col">
+                    ID
+                    {{{sortable '_id' _sort}}}
+                </th>
+                <th scope="col">
+                    Tên khóa học
+                    {{{sortable 'name' _sort}}}
+                </th>
+                <th scope="col">
+                    Trình độ
+                    {{{sortable 'level' _sort}}}
+                </th>
+                <th scope="col" colspan="2">
+                    Thời gian tạo
+                    {{{sortable 'createdAt' _sort}}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
+                    </div>
+                </td>
+                <th scope="row">{{this._id}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.level}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a href="/courses/{{this._id}}/edit" class="btn btn-primary">Sửa</a>
+                    <a href="#" class="btn btn-danger" data-id="{{this._id}}" data-toggle="modal"
+                        data-target="#delete-course-model">Xóa</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    Bạn chưa đăng khóa học nào.
+                    <a href="/courses/create">Đăng khóa học</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+<!-- Confirm delete course -->
+<!-- Modal -->
+<div class="modal fade" id="delete-course-model" tabindex="-1" role="dialog" aria-labelledby="delete-course-modelTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xóa khóa học ?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn chắc chắn muốn xóa khóa học này ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button id="btn-delete-course" type="button" class="btn btn-danger">Xóa bỏ</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete hidden form (Mục đích sử dụng form là để override method khi gửi thành DELETE) -->
+<!-- Nếu sử dụng <a> khi chuyển đi sẽ chỉ là phương thức GET -->
+<form method="POST" name="delete-courses-form"></form>
+
+<script>
+
+    // Bắt sự kiện DOM load xong mới chạy đoạn code này
+    // Nếu chạy trước thì lỗi. Do lúc đó chưa có thư viện khai báo Jquery. Nên lỗi cú pháp.
+    document.addEventListener('DOMContentLoaded', function () {
+        var courseID;
+        var deleteForm = document.forms['delete-courses-form'];
+        var btnDeleteCourse = document.getElementById('btn-delete-course');
+        var checkboxAll = $('#checkbox-all');
+        var courseItemCheckbox = $('input[name="courseIds[]"]');
+        var checkAllSubmitBtn = $('.check-all-submit-btn');
+
+        // Khi dialog được show ra
+        $('#delete-course-model').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            courseID = button.data('id');
+        })
+
+        // Khi bấm vào nút xác nhận xóa
+        btnDeleteCourse.onclick = function () {
+            deleteForm.action = `/courses/${courseID}?_method=DELETE`;
+            deleteForm.submit();
+        }
+
+        // Checkbox all changed
+        checkboxAll.change(function() {
+            var isCheckedAll = $(this).prop('checked');
+
+            courseItemCheckbox.prop('checked', isCheckedAll);
+            renderCheckAllSubmitBtn();
+        })
+        
+        // Course item checkbox changed
+        courseItemCheckbox.change(function() {
+            var isCheckedAll = courseItemCheckbox.length === $('input[name="courseIds[]"]:checked').length;
+            checkboxAll.prop('checked', isCheckedAll);
+            renderCheckAllSubmitBtn();
+        })
+
+        // Re-render check all submit button
+        function renderCheckAllSubmitBtn() {
+            var checkedCount = $('input[name="courseIds[]"]:checked').length;
+
+            if (checkedCount > 0) {
+                checkAllSubmitBtn.attr('disabled', false);
+            }
+            else {
+                checkAllSubmitBtn.attr('disabled', true);
+            }
+        }
+    })
+
+
+</script>
