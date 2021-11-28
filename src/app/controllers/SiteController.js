@@ -1,28 +1,29 @@
 const Course = require('../models/Courses');
 const { mutipleMongooseToObject } = require('../../util/mongoose');
+const pagination = require('../../util/pagination');
 
 class SiteController {
     // [GET] /
     home(req, res, next) {
-        /* Cách viết với Callback */
-        // Course.find({}, (err, courses) => {
-        //     if (err) {
-        //         res.status(400).json({ error: 'message'});
-        //     }
-        //     res.json(courses);
-        // })
+        var page = parseInt(req.query.page) || 1;
+        if (page < 0) {
+            page = 1;
+        }
 
-        /* Cách viết với Promise */
-        Course.find({})
-            .then((courses) => {
-                //course = [{}, {}, {}]
+        Promise.all([
+            Course.find({}).enabledPagination(page, pagination.perPage),
+            Course.count(),
+        ])
+            .then(([courses, totalCourses]) => {
                 res.render('home', {
                     courses: mutipleMongooseToObject(courses),
+                    configPagination: pagination.configPagination(
+                        page,
+                        totalCourses,
+                    ),
                 });
             })
             .catch(next); // next là hàm next(err) chuyển lỗi sang middleware
-
-        //res.render('home');
     }
 
     // [GET] /search

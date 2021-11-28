@@ -11,8 +11,6 @@ const SortMiddleware = require('./app/middlewares/sortMiddleware');
 
 const route = require('./routes');
 const db = require('./config/db');
-const { type } = require('os');
-const { listeners } = require('./app/models/Courses');
 
 // Connect to DB
 db.connect();

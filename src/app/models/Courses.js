@@ -37,6 +37,10 @@ CourseSchema.query.sortable = function (req) {
     return this;
 };
 
+CourseSchema.query.enabledPagination = function (page, perPage) {
+    return this.skip(perPage * (page - 1)).limit(perPage);
+};
+
 // Add plugins
 CourseSchema.plugin(AutoIncrement);
 CourseSchema.plugin(mongooseDelete, {
