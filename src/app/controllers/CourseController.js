@@ -1,4 +1,4 @@
-const Course = require('../models/Courses');
+const Course = require('../models/Course');
 const { mongooseToObject } = require('../../util/mongoose');
 
 class CourseController {
@@ -22,6 +22,7 @@ class CourseController {
     store(req, res, next) {
         req.body.image = `https://img.youtube.com/vi/${req.body.videoID}/sddefault.jpg`;
         const course = new Course(req.body);
+
         course
             .save()
             .then(() => res.redirect('/me/stored/courses'))

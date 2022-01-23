@@ -1,4 +1,5 @@
 const Handlebars = require('handlebars');
+const exhbs_sections = require('express-handlebars-sections');
 
 module.exports = {
     sum: (a, b) => a + b,
@@ -33,4 +34,5 @@ module.exports = {
 
         return new Handlebars.SafeString(output);
     },
+    section: exhbs_sections(),
 };

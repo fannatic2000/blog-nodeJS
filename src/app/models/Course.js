@@ -42,7 +42,10 @@ CourseSchema.query.enabledPagination = function (page, perPage) {
 };
 
 // Add plugins
-CourseSchema.plugin(AutoIncrement);
+CourseSchema.plugin(AutoIncrement, {
+    id: 'courses_seq',
+    collection_name: 'course_counter',
+});
 CourseSchema.plugin(mongooseDelete, {
     overrideMethods: 'all',
     deletedAt: true,
